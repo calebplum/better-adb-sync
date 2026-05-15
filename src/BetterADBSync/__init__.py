@@ -2,7 +2,7 @@
 
 """Sync files between a computer and an Android device"""
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 from typing import List, Tuple, Union
 import logging
@@ -11,7 +11,7 @@ import stat
 import fnmatch
 
 from .argparsing import get_cli_args
-from .SAOLogging import logging_fatal, log_tree, setup_root_logger, perror, FATAL
+from .SAOLogging import logging_fatal, log_tree, log_tree_summary, setup_root_logger, perror, FATAL
 
 from .FileSystems.Base import FileSystem
 from .FileSystems.Local import LocalFileSystem
@@ -437,20 +437,11 @@ def main():
         log_tree(f"{path_source} --> {path_destination}", tree_copy, log_leaves_types = False)
     logging.info("")
 
-    logging.info("Source excluded tree:")
-    if tree_excluded_source is not None:
-        log_tree(path_source, tree_excluded_source, log_leaves_types = False)
-    logging.info("")
+    log_tree_summary("Source excluded tree", path_source, tree_excluded_source, log_leaves_types = False)
 
-    logging.info("Destination unaccounted tree:")
-    if tree_unaccounted_destination is not None:
-        log_tree(path_destination, tree_unaccounted_destination, log_leaves_types = False)
-    logging.info("")
+    log_tree_summary("Destination unaccounted tree", path_destination, tree_unaccounted_destination, log_leaves_types = False)
 
-    logging.info("Destination excluded tree:")
-    if tree_excluded_destination is not None:
-        log_tree(path_destination, tree_excluded_destination, log_leaves_types = False)
-    logging.info("")
+    log_tree_summary("Destination excluded tree", path_destination, tree_excluded_destination, log_leaves_types = False)
 
 
     tree_unaccounted_destination_non_excluded = None
@@ -462,10 +453,12 @@ def main():
             )
         )
 
-    logging.info("Non-excluded-supporting destination unaccounted tree:")
-    if tree_unaccounted_destination_non_excluded is not None:
-        log_tree(path_destination, tree_unaccounted_destination_non_excluded, log_leaves_types = False)
-    logging.info("")
+    log_tree_summary(
+        "Non-excluded-supporting destination unaccounted tree",
+        path_destination,
+        tree_unaccounted_destination_non_excluded,
+        log_leaves_types = False
+    )
 
     logging.info("SYNCING")
     logging.info("")

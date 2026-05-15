@@ -65,6 +65,33 @@ def logging_fatal(message, log_stack_info: bool = True, exit_code: int = 1):
     logging.critical("Exiting")
     raise SystemExit(exit_code)
 
+def count_tree_paths(tree) -> int:
+    """Count file and directory paths represented in a sync tree (excludes '.' metadata)."""
+    if tree is None:
+        return 0
+    if isinstance(tree, tuple):
+        return 1
+    if isinstance(tree, dict):
+        count = 0
+        for key, value in tree.items():
+            if key == ".":
+                continue
+            count += 1
+            if isinstance(value, dict):
+                count += count_tree_paths(value)
+        return count
+    raise NotImplementedError
+
+def log_tree_summary(label: str, root_path: str, tree, log_leaves_types = False):
+    """Log a path count at INFO; log the count header and full tree at DEBUG."""
+    count = count_tree_paths(tree)
+    suffix = "object" if count == 1 else "objects"
+    logging.info(f"{label}: {count} {suffix}")
+    if tree is not None and logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug(f"{label}:")
+        log_tree(root_path, tree, log_leaves_types = log_leaves_types, logging_level = logging.DEBUG)
+    logging.info("")
+
 def log_tree(title, tree, finals = None, log_leaves_types = True, logging_level = logging.INFO):
     """Log tree nicely if it is a dictionary.
     log_leaves_types can be False to log no leaves, True to log all leaves, or a tuple of types for which to log."""
