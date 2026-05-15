@@ -2,7 +2,7 @@
 
 """Sync files between a computer and an Android device"""
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 from typing import List, Tuple, Union
 import logging
@@ -382,15 +382,15 @@ def main():
     except (NotADirectoryError, PermissionError) as e:
         perror(path_destination, e, FATAL)
 
-    logging.info("Source tree:")
+    logging.debug("Source tree:")
     if files_tree_source is not None:
-        log_tree(path_source, files_tree_source)
-    logging.info("")
+        log_tree(path_source, files_tree_source, logging_level = logging.DEBUG)
+    logging.debug("")
 
-    logging.info("Destination tree:")
+    logging.debug("Destination tree:")
     if files_tree_destination is not None:
-        log_tree(path_destination, files_tree_destination)
-    logging.info("")
+        log_tree(path_destination, files_tree_destination, logging_level = logging.DEBUG)
+    logging.debug("")
 
     if isinstance(files_tree_source, dict):
         excludePatterns = [fs_destination.normpath(
